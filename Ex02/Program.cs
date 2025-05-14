@@ -16,10 +16,10 @@ namespace Ex02
             {
                 m_Inputs = new List<GameLogic.GuessConstruct>
                    {
-                       new GameLogic.GuessConstruct { guessCode = 1},
-                       new GameLogic.GuessConstruct { guessCode = 2},
-                       new GameLogic.GuessConstruct { guessCode = 3},
-                       new GameLogic.GuessConstruct { guessCode = 4}
+                       new GameLogic.GuessConstruct { m_GuessCode = 3},
+                       new GameLogic.GuessConstruct { m_GuessCode = 5},
+                       new GameLogic.GuessConstruct { m_GuessCode = 2},
+                       new GameLogic.GuessConstruct { m_GuessCode = 7}
                    }
             };
             GameLogic.eGameResult result = game.CheckGuess(guess);

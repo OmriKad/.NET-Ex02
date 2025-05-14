@@ -10,11 +10,10 @@ namespace Ex02
 {
     internal class GameLogic
     {
-        private static int m_MinNumOfGuesses = 4;
-        private static int m_MaxNumOfGuesses = 10;
-        private static int m_ItemsEachGuess = 4;
-        private static int m_NumnOfOptions = 8;
-        private static int m_NumOfGuesses = 0;
+        private const int k_MinNumOfGuesses = 4;
+        private const  int k_MaxNumOfGuesses = 10;
+        private const int k_ItemsEachGuess = 4;
+        private const int k_NumnOfOptions = 8;
         public enum eTurnResult
         { 
             Red,
@@ -28,19 +27,18 @@ namespace Ex02
             Lose,
             Pending
         }
+
         private List<Guess> m_GuessesList = new List<Guess>();
         private List<int> m_SecretItem = new List<int>();
-
-
         private void generateSecretItem()
         {
             Random random = new Random();
-            for (int i = 0; i < m_ItemsEachGuess; i++)
+            for (int i = 0; i < k_ItemsEachGuess; i++)
             {
                 bool generateFlag = false;
                 do
                 {
-                    int randomNum = random.Next(1, m_NumnOfOptions);
+                    int randomNum = random.Next(1, k_NumnOfOptions);
                     if (!m_SecretItem.Contains(randomNum))
                     {
                         m_SecretItem.Add(randomNum);
@@ -54,7 +52,6 @@ namespace Ex02
 
         public void StartGame()
         {
-            m_NumOfGuesses = 0;
             m_GuessesList.Clear();
             m_SecretItem.Clear();
             generateSecretItem();
@@ -63,11 +60,10 @@ namespace Ex02
         public eGameResult CheckGuess(Guess i_Guess)
         {
             eGameResult result;
-            if (m_NumOfGuesses + 1 < m_MaxNumOfGuesses)
+            if (m_GuessesList.Count + 1 < k_MaxNumOfGuesses)
             {
-                m_NumOfGuesses++;
                 m_GuessesList.Add(i_Guess);
-                result = compareAndResolve(ref i_Guess);
+                result = compareAndResolve();
             }
             else
             {
@@ -76,46 +72,43 @@ namespace Ex02
             return result;
         }
 
-        private eGameResult compareAndResolve(ref Guess i_Guess)
+        private eGameResult compareAndResolve()
         {
-            for (int i = 0; i < i_Guess.m_Inputs.Count; i++)
+            Guess latestGuess = m_GuessesList.Last();
+            bool allGreen = true;
+
+            for(int i = 0; i < latestGuess.m_Inputs.Count; i++)
             {
-                int letter = i_Guess.m_Inputs[i].guessCode;
-                int letterLocation = m_SecretItem.IndexOf(letter);
-                GuessConstruct temp = i_Guess.m_Inputs[i];
-                if (letterLocation != -1)
+                int locationInSecret = m_SecretItem.IndexOf(latestGuess.m_Inputs[i].m_GuessCode);
+                if (locationInSecret == -1) // Not found in secret
                 {
-                    temp.guessResult = i == letterLocation ? eTurnResult.Green : eTurnResult.Yellow;
+                    latestGuess.m_Inputs[i].m_GuessResult = eTurnResult.Red;
+                    allGreen = false;
+                }
+                else if (locationInSecret == i)
+                {
+                    latestGuess.m_Inputs[i].m_GuessResult = eTurnResult.Green;
                 }
                 else
                 {
-                    temp.guessResult = eTurnResult.Red;
-                }
-                i_Guess.m_Inputs[i] = temp;
-            }
-            // check if all letters are green, if so, return win else return pending
-            bool allGreen = true;
-            for (int i = 0; i < i_Guess.m_Inputs.Count; i++)
-            {
-                if (i_Guess.m_Inputs[i].guessResult != eTurnResult.Green)
-                {
+                    latestGuess.m_Inputs[i].m_GuessResult = eTurnResult.Yellow;
                     allGreen = false;
-                    break;
                 }
             }
+
             eGameResult result = allGreen ? eGameResult.Win : eGameResult.Pending;
             return result;
         }
 
-        internal struct Guess
+        internal class Guess
         {
             internal List<GuessConstruct> m_Inputs;
         }
 
-        internal struct GuessConstruct
+        internal class GuessConstruct
         {
-            internal int guessCode;
-            internal eTurnResult guessResult;
+            internal int m_GuessCode;
+            internal eTurnResult m_GuessResult;
         }
     }
 }
