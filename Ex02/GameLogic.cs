@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading.Tasks;
+using Ex02;
+
+
+/// use of internal might not be neccery here, we will need to check it together
 
 namespace Ex02
 {
@@ -60,7 +59,7 @@ namespace Ex02
             generateSecretItem();
         }
 
-        public eGameResult CheckGuess(Guess i_Guess)
+        private eGameResult CheckGuess(GameLogic.Guess i_Guess)
         {
             eGameResult result;
             if (m_NumOfGuesses + 1 < m_MaxNumOfGuesses)
@@ -107,12 +106,12 @@ namespace Ex02
             return result;
         }
 
-        internal struct Guess
+        struct Guess
         {
             internal List<GuessConstruct> m_Inputs;
         }
 
-        internal struct GuessConstruct
+        struct GuessConstruct
         {
             internal int guessCode;
             internal eTurnResult guessResult;
