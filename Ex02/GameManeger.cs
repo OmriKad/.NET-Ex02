@@ -46,37 +46,36 @@ namespace Ex02
 
         private void HandleUserInputInMenus()
         {
-            System.Console.WriteLine("Please Enter The Number Of Guesses To Start The Game");
-            System.Console.WriteLine("The number of guesses should not be lower then 4, and shall not excceed 10");
-            ConsoleKeyInfo keyInfo = Console.ReadKey(true);
-            string InputFromUser = $"{keyInfo.KeyChar}";
-            if (int.TryParse(InputFromUser, out int InputConvertedToNumber))
+            System.Console.WriteLine("Please enter the number of guesses to start the game.");
+            System.Console.WriteLine("The number of guesses should not be lower than 4 and should not exceed 10.");
+            System.Console.WriteLine("Type 'q' to quit.");
+
+            string inputFromUser = System.Console.ReadLine();
+
+            if (inputFromUser.ToLower() == "q")
+            {
+                System.Console.WriteLine("Terminating Program...");
+                m_IsUserTryingToGameQuit = true;
+            }
+            else if (int.TryParse(inputFromUser, out int inputConvertedToNumber))
             {
                 m_IsUserTryingToGameQuit = false;
-                if (InputConvertedToNumber >= 4 && InputConvertedToNumber <= 10) // magic numbers... fix this later
+                if (inputConvertedToNumber >= 4 && inputConvertedToNumber <= 10)
                 {
-                    m_MaxNumberOfGuesses = InputConvertedToNumber;
+                    m_MaxNumberOfGuesses = inputConvertedToNumber;
                 }
                 else
                 {
-                    System.Console.WriteLine("Your choice is Out of Bounds,Please pick a number from 4-10");
+                    System.Console.WriteLine("Your choice is out of bounds. Please pick a number from 4 to 10.");
                 }
             }
             else
             {
-                if (keyInfo.Key == ConsoleKey.Escape)
-                {
-                    System.Console.WriteLine("Terminating Program...");
-                    m_IsUserTryingToGameQuit = true;
-                }
-                else
-                {
-                    System.Console.WriteLine("Your input is not valid, please enter a number between 4 to 10");
-                }
-
+                System.Console.WriteLine("Your input is not valid. Please enter a number between 4 to 10, or 'q' to quit.");
             }
-
         }
+
+
 
 
         private void GetUserInputForGuesses()
@@ -104,7 +103,7 @@ namespace Ex02
                 }
 
             }
-            System.Console.WriteLine(PotentialGuess);
+           // System.Console.WriteLine(PotentialGuess);
         }
 
         private bool ValidateGuess(string PotentialGuess)
