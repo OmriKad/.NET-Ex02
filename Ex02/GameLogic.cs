@@ -1,20 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Ex02;
-
-
-/// use of internal might not be neccery here, we will need to check it together
 
 namespace Ex02
 {
     public class GameLogic
     {
 
-        private static int m_MinNumOfGuesses = 4;
-        private static int m_MaxNumOfGuesses = 10;
-        private static int m_ItemsEachGuess = 4;
-        private static int m_NumnOfOptions = 8;
+        private static int s_MinNumOfGuesses = 4;
+        private static int s_MaxNumOfGuesses = 10;
+        private static int s_ItemsEachGuess = 4;
+        private static int s_NumnOfOptions = 8;
 
         public enum eTurnResult
         {
@@ -35,18 +31,18 @@ namespace Ex02
 
 
 
-        public Guess SendSpecificGuessToUI(int i) { return m_GuessesList[i]; }
+        public Guess SendSpecificGuessToUi(int i_I) { return m_GuessesList[i_I]; }
         public int GetCurrentNumberOfGuesses() { return m_GuessesList.Count; }
 
         private void generateSecretItem()
         {
             Random random = new Random();
-            for (int i = 0; i < k_ItemsEachGuess; i++)
+            for (int i = 0; i < s_ItemsEachGuess; i++)
             {
                 bool generateFlag = false;
                 do
                 {
-                    int randomNum = random.Next(1, k_NumnOfOptions);
+                    int randomNum = random.Next(1, s_NumnOfOptions);
                     if (!m_SecretItem.Contains(randomNum))
                     {
                         m_SecretItem.Add(randomNum);
@@ -69,7 +65,7 @@ namespace Ex02
         {
             eGameResult result;
 
-            if (m_GuessesList.Count + 1 < m_MaxNumOfGuesses)
+            if (m_GuessesList.Count + 1 < s_MaxNumOfGuesses)
             {
                 m_GuessesList.Add(i_Guess);
                 result = compareAndResolve();
@@ -109,30 +105,36 @@ namespace Ex02
             return result;
         }
 
-        public struct Guess
+        public class Guess
         {
             public List<GuessConstruct> m_Inputs;
-        }
 
-        public struct GuessConstruct
-        {
-            public int guessCode;
-            public eTurnResult guessResult;
-        }
-
-        public Guess ConvertIntToGuess(int GuessCode)
-        {
-            Guess NewGuess = new Guess();
-            NewGuess.m_Inputs = new List<GuessConstruct>(); // 1234
-            for (int i = 0; i < 4; i++)
+            public Guess ConvertIntToGuess(int i_GuessCode)
             {
-                GuessConstruct NewGuessConstruct = new GuessConstruct();
-                NewGuessConstruct.guessCode = GuessCode % 10;
-                NewGuess.m_Inputs.Insert(0, NewGuessConstruct);
-                GuessCode = GuessCode / 10;
+                Guess newGuess = new Guess
+                {
+                    m_Inputs = new List<GuessConstruct>()
+                };
+                for (int i = 0; i < 4; i++)
+                {
+                    GuessConstruct newGuessConstruct = new GuessConstruct
+                    {
+                        m_GuessCode = i_GuessCode % 10
+                    };
+                    newGuess.m_Inputs.Insert(0, newGuessConstruct);
+                    i_GuessCode /= 10;
+                }
+                return newGuess;
             }
-            return NewGuess;
         }
+
+        public class GuessConstruct
+        {
+            public int m_GuessCode;
+            public eTurnResult m_GuessResult;
+        }
+
+
 
 
         public List<int> GetSecertItem()

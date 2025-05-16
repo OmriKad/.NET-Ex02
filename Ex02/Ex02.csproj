@@ -39,7 +39,10 @@
     <Compile Include="Board.cs" />
     <Compile Include="GameLogic.cs" />
     <Compile Include="GameManeger.cs" />
-    <Compile Include="GameUI.cs" />
+    <Compile Include="GameUi.cs" />
+    <Compile Include="Guess.cs" />
+    <Compile Include="Item.cs" />
+    <Compile Include="Messages.cs" />
     <Compile Include="Program.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -1,61 +1,27 @@
 ﻿
 using System;
-using System.Text;
 
 namespace Ex02
 {
-    class Board
+    public class Board
     {
-
-        private const string k_BoardSkeleton = @"
-    Current board status:
-
-    Pins:        Result:    
-   |============|============|
-   |  # # # #   |            |
-   |------------|------------|
-   |            |            |
-   |------------|------------|
-   |            |            |
-   |------------|------------|
-   |            |            |
-   |------------|------------|
-   |            |            |
-   |------------|------------|
-   |            |            |
-   |------------|------------|
-   |            |            |
-   |------------|------------|
-   |            |            |
-   |------------|------------|
-   |            |            |
-   |------------|------------|
-   |            |            |
-   |------------|------------|
-   |            |            |
-   |------------|------------|
-   |============|============|
-
-    ";
-
-        public void PrintBoard()
+        public void PrintHeadAndSecret(string i_Secert = "# # # #")
         {
-            System.Console.WriteLine(k_BoardSkeleton);
+            System.Console.WriteLine($@"
+| Pins:    |Result:     |
+|==========|============|
+|{i_Secert}|            |
+|==========|============|
+");
         }
 
-
-        public void BuildCorrespondingGuessLine()//string Guess,string Result ,uint GuessIndex
+        public void PrintGessAndResultLine(string i_Guess, string i_Result)
         {
-            StringBuilder sb = new StringBuilder();
-            sb.Append("a b c d");  /// Guess takes 7 blank spaces
-            sb.Append("  |  ");
-            sb.Append("a b c d");
-            Console.SetCursorPosition(7,6); // need to multiple by int
-            System.Console.WriteLine(sb.ToString());
-            Console.SetCursorPosition(0, 0);
+            System.Console.WriteLine(
+                $@"
+|{i_Guess} |{i_Result}  |
+|==========|============|
+");
         }
-
     }
-
 }
-
