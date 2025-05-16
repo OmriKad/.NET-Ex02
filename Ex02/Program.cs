@@ -13,7 +13,6 @@ namespace Ex02
         {
             GameManager GM = new GameManager();
             GM.GameLoop();
-
         }
     }
 }
