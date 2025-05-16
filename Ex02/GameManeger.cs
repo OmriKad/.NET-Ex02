@@ -4,20 +4,21 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Ex02.ConsoleUtils;
+using System.Threading;
 
 namespace Ex02
 {
     public class GameManager
     {
         int m_CurrentNumberOfGuesses = 0;
-        bool m_IsUserTryingToGameQuit;
         int m_MaxNumberOfGuesses;
         eGameState m_GameState = eGameState.Menu;
         Board m_Board;
         GameLogic m_GameLogic;
 
 
-        private enum eGameState { Menu,Exit,Playing,GuessHandling,GameEnd}
+        private enum eGameState { Menu, Exit, Playing, GuessHandling, GameEnd, GameWon }
 
 
         public GameManager()
@@ -34,12 +35,13 @@ namespace Ex02
             {
                 if (m_GameState == eGameState.Menu)
                 {
+                    PrintSecretTitleScreen();
+                    m_CurrentNumberOfGuesses = 0;
                     Ex02.ConsoleUtils.Screen.Clear(); // ani omo!!!
                     HandleUserInputInMenus();
                     if (m_GameState == eGameState.Playing)
                     {
                         m_GameLogic.StartGame();
-                        GameUI.PrintSecretItem(m_GameLogic.GetSecertItem());
                     }
                 }
                 else if (m_GameState == eGameState.Playing)
@@ -59,11 +61,26 @@ namespace Ex02
                         GameUI.PrintGuessAndResult(m_GameLogic.SendSpecificGuessToUI(i), i);
 
                     }
-                    Console.SetCursorPosition(0, Console.WindowHeight - 1);
-
+                    Console.SetCursorPosition(0, Console.WindowHeight - 2);
+                }
+                else if (m_GameState == eGameState.GameWon)
+                {
+                    Ex02.ConsoleUtils.Screen.Clear();
+                    PrintWinScreen();
+                    Ex02.ConsoleUtils.Screen.Clear();
+                    m_GameState = eGameState.Menu;
 
                 }
-  
+                else if (m_GameState == eGameState.GameEnd)
+                {
+                    Ex02.ConsoleUtils.Screen.Clear();
+                    PrintLoseScreen();
+                    Thread.Sleep(1000);
+                    Ex02.ConsoleUtils.Screen.Clear();
+                    m_GameState = eGameState.Menu;
+
+                }
+
 
             }
 
@@ -94,11 +111,13 @@ namespace Ex02
                 else
                 {
                     System.Console.WriteLine("Your choice is out of bounds. Please pick a number from 4 to 10.");
+                    Thread.Sleep(1000);
                 }
             }
             else
             {
                 System.Console.WriteLine("Your input is not valid. Please enter a number between 4 to 10, or 'q' to quit.");
+                Thread.Sleep(1000);
             }
         }
 
@@ -107,10 +126,10 @@ namespace Ex02
 
         private void GetUserInputForGuesses()
         {
-            System.Console.WriteLine("please enter your guess : ");
-            string PotentialGuess;
-            PotentialGuess = System.Console.ReadLine();
-            if(PotentialGuess.ToLower() == "q")
+            Console.SetCursorPosition(0, Console.WindowHeight - 2);
+            Console.Write("please enter your guess : ");
+            string PotentialGuess = System.Console.ReadLine();
+            if (PotentialGuess.ToLower() == "q")
             {
                 Ex02.ConsoleUtils.Screen.Clear(); // ani omo!!!
                 m_GameState = eGameState.Exit;
@@ -119,6 +138,7 @@ namespace Ex02
             else if (PotentialGuess.Length != 4)
             {
                 System.Console.WriteLine("Your guess is not in the correct length, please enter a 4 letter string");
+                Thread.Sleep(1500);
             }
             else
             {
@@ -127,17 +147,28 @@ namespace Ex02
                     if (!ValidateGuess(PotentialGuess))
                     {
                         System.Console.WriteLine("Your guess contains characters that are not allowed, make sure to enter characters between A-H only");
+                        Thread.Sleep(1500);
                     }
                     else
                     {
+                        m_CurrentNumberOfGuesses++;
                         GameLogic.Guess CurrGuess = m_GameLogic.ConvertIntToGuess(GameUI.convertStringToInt(PotentialGuess));
-                        m_GameLogic.CheckGuess(CurrGuess);
+                        GameLogic.eGameResult CurrentResult = m_GameLogic.CheckGuess(CurrGuess);
+                        if (CurrentResult == GameLogic.eGameResult.Win)
+                        {
+                            m_GameState = eGameState.GameWon;
+                        }
+                        if (m_CurrentNumberOfGuesses == m_MaxNumberOfGuesses)
+                        {
+                            m_GameState = eGameState.GameEnd;
+                        }
                     }
 
                 }
                 else
                 {
-                    System.Console.WriteLine("Your guess does not contain only letters,Please try again"); 
+                    System.Console.WriteLine("Your guess does not contain only letters,Please try again");
+                    Thread.Sleep(1500);
                 }
 
             }
@@ -169,8 +200,95 @@ namespace Ex02
                     isComprisedOfLetters = false;
                 }
             }
-            return isComprisedOfLetters; 
+            return isComprisedOfLetters;
         }
 
+
+
+        private void PrintWinScreen()
+        {
+            Console.ForegroundColor = ConsoleColor.Green;
+            Console.WriteLine(@"
+ __     __          __          ___       _ 
+ \ \   / /          \ \        / (_)     | |
+  \ \_/ /__  _   _   \ \  /\  / / _ _ __ | |
+   \   / _ \| | | |   \ \/  \/ / | | '_ \| |
+    | | (_) | |_| |    \  /\  /  | | | | |_|
+    |_|\___/ \__,_|     \/  \/   |_|_| |_(_)
+                                            
+    ");
+            Console.WriteLine("CONGRATULATIONS! You won the game!");
+            System.Console.WriteLine("The secert guess was:");
+            GameUI.PrintSecretItem(m_GameLogic.GetSecertItem());
+            Console.ResetColor();
+            Thread.Sleep(1500);
+        }
+
+
+
+
+
+        private void PrintLoseScreen()
+        {
+            Console.ForegroundColor = ConsoleColor.Red;
+            Console.WriteLine(@"
+      ______
+   .-'      `-.
+  /            \
+ |              |
+ |,  .-.  .-.  ,|
+ | )(_o/  \o_)( |
+ |/     /\     \|
+ (_     ^^     _)
+  \__|IIIIII|__/
+   | \IIIIII/ |
+   \          /
+    `--------`
+");
+            Console.WriteLine("GAME OVER! Better luck next time...");
+            System.Console.WriteLine("The secert guess was...");
+            GameUI.PrintSecretItem(m_GameLogic.GetSecertItem());
+            Console.ResetColor();
+            Thread.Sleep(1500);
+        }
+
+
+
+        private void PrintSecretTitleScreen()
+        {
+            Console.Clear();
+            Console.ForegroundColor = ConsoleColor.Cyan;
+            Console.WriteLine(@"
+ _   _                                   _   
+| | | |                                 | |  
+| |_| |__   ___   ___  ___  ___ _ __ ___| |_ 
+| __| '_ \ / _ \ / __|/ _ \/ __| '__/ _ \ __|
+| |_| | | |  __/ \__ \  __/ (__| | |  __/ |_ 
+ \__|_| |_|\___| |___/\___|\___|_|  \___|\__|
+                                            
+                                            ");
+            Console.ResetColor();
+            Thread.Sleep(2000);
+        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     }
+
+
+
+
+
 }

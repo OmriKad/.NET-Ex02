@@ -14,7 +14,7 @@ namespace Ex02
         private static int m_MinNumOfGuesses = 4;
         private static int m_MaxNumOfGuesses = 10;
         private static int m_ItemsEachGuess = 4;
-        private static int m_NumnOfOptions = 8;
+        private static int m_NumOfOptions = 8;
 
         public enum eTurnResult
         {
@@ -41,12 +41,12 @@ namespace Ex02
         private void generateSecretItem()
         {
             Random random = new Random();
-            for (int i = 0; i < k_ItemsEachGuess; i++)
+            for (int i = 0; i < m_ItemsEachGuess; i++)
             {
                 bool generateFlag = false;
                 do
                 {
-                    int randomNum = random.Next(1, k_NumnOfOptions);
+                    int randomNum = random.Next(1, m_NumOfOptions);
                     if (!m_SecretItem.Contains(randomNum))
                     {
                         m_SecretItem.Add(randomNum);
@@ -86,21 +86,21 @@ namespace Ex02
             Guess latestGuess = m_GuessesList.Last();
             bool allGreen = true;
 
-            for(int i = 0; i < latestGuess.m_Inputs.Count; i++)
+            for (int i = 0; i < latestGuess.m_Inputs.Count; i++)
             {
-                int locationInSecret = m_SecretItem.IndexOf(latestGuess.m_Inputs[i].m_GuessCode);
+                int locationInSecret = m_SecretItem.IndexOf(latestGuess.m_Inputs[i].guessCode);
                 if (locationInSecret == -1) // Not found in secret
                 {
-                    latestGuess.m_Inputs[i].m_GuessResult = eTurnResult.Red;
+                    latestGuess.m_Inputs[i].guessResult = eTurnResult.Red;
                     allGreen = false;
                 }
                 else if (locationInSecret == i)
                 {
-                    latestGuess.m_Inputs[i].m_GuessResult = eTurnResult.Green;
+                    latestGuess.m_Inputs[i].guessResult = eTurnResult.Green;
                 }
                 else
                 {
-                    latestGuess.m_Inputs[i].m_GuessResult = eTurnResult.Yellow;
+                    latestGuess.m_Inputs[i].guessResult = eTurnResult.Yellow;
                     allGreen = false;
                 }
             }
@@ -109,12 +109,12 @@ namespace Ex02
             return result;
         }
 
-        public struct Guess
+        public class Guess
         {
             public List<GuessConstruct> m_Inputs;
         }
 
-        public struct GuessConstruct
+        public class GuessConstruct
         {
             public int guessCode;
             public eTurnResult guessResult;
@@ -139,5 +139,7 @@ namespace Ex02
         {
             return m_SecretItem;
         }
+
+
     }
 }

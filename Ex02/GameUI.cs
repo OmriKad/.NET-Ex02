@@ -38,10 +38,11 @@ namespace Ex02
         public static void PrintGuessAndResult(GameLogic.Guess CurrentGuess,int GuessIndex)
         {
             StringBuilder CurrentLine = ConvertGuessToStringBuilder(CurrentGuess);
+            CurrentLine.Append(" |  ");
             CurrentLine = ProccessResult(CurrentGuess, CurrentLine);
-            Console.SetCursorPosition(7 + GuessIndex, 6);
+            Console.SetCursorPosition(7, 6 + GuessIndex*2);
             System.Console.WriteLine(CurrentLine.ToString());
-            Console.SetCursorPosition(0,0);
+            Console.SetCursorPosition(0, Console.WindowHeight - 1);
         }
 
 
