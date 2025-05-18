@@ -37,10 +37,14 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Board.cs" />
-    <Compile Include="GameLogic.cs" />
     <Compile Include="GameManeger.cs" />
-    <Compile Include="GameUI.cs" />
+    <Compile Include="TurnStatus.cs" />
+    <Compile Include="GameUi.cs" />
+    <Compile Include="Guess.cs" />
+    <Compile Include="Messages.cs" />
     <Compile Include="Program.cs" />
+    <Compile Include="Secret.cs" />
+    <Compile Include="Settings.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Ex02.ConsoleUtils">

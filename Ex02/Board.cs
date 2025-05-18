@@ -1,61 +1,69 @@
 ﻿
 using System;
-using System.Text;
+using System.Collections.Generic;
 
 namespace Ex02
 {
-    class Board
+    public class Board
     {
-
-        private const string k_BoardSkeleton = @"
-    Current board status:
-
-    Pins:        Result:    
-   |============|============|
-   |  # # # #   |            |
-   |------------|------------|
-   |            |            |
-   |------------|------------|
-   |            |            |
-   |------------|------------|
-   |            |            |
-   |------------|------------|
-   |            |            |
-   |------------|------------|
-   |            |            |
-   |------------|------------|
-   |            |            |
-   |------------|------------|
-   |            |            |
-   |------------|------------|
-   |            |            |
-   |------------|------------|
-   |            |            |
-   |------------|------------|
-   |            |            |
-   |------------|------------|
-   |============|============|
-
-    ";
-
-        public void PrintBoard()
+        public void PrintHeadAndSecret(string i_Secert)
         {
-            System.Console.WriteLine(k_BoardSkeleton);
+            string spacedGuess = string.Join(" ", i_Secert.ToCharArray());
+            System.Console.Write($@"
+| Pins:    |Result:     |
+|==========|============|
+| {spacedGuess, -9}|            |
+|==========|============|");
+        }
+        public void PrintHead()
+        {
+            System.Console.Write(@"
+| Pins:    |Result:     |
+|==========|============|
+| # # # #  |            |
+|==========|============|");
         }
 
-
-        public void BuildCorrespondingGuessLine()//string Guess,string Result ,uint GuessIndex
+        public void PrintGuessAndResultLine(string i_Guess, string i_Result)
         {
-            StringBuilder sb = new StringBuilder();
-            sb.Append("a b c d");  /// Guess takes 7 blank spaces
-            sb.Append("  |  ");
-            sb.Append("a b c d");
-            Console.SetCursorPosition(7,6); // need to multiple by int
-            System.Console.WriteLine(sb.ToString());
-            Console.SetCursorPosition(0, 0);
+            string spacedGuess = string.Join(" ", i_Guess.ToCharArray());
+            string spacedResult = string.Join(" ", i_Result.ToCharArray());
+            System.Console.Write($@"
+| {spacedGuess,-9}| {spacedResult,-11}| 
+|==========|============|");;
         }
 
+        public void PrintEmptyLine()
+        {
+            System.Console.Write(@"
+|          |            |
+|==========|============|");
+        }
+
+        internal void RenderBoard(List<Guess> i_GuessesList, Secret i_SecretItem, string i_Message, bool i_GameEnded)
+        {
+            ConsoleUtils.Screen.Clear();
+            if (i_GameEnded)
+            {
+                PrintHeadAndSecret(i_SecretItem.SecretValue);
+            }
+            else
+            {
+                PrintHead();
+            }
+            foreach(Guess t in i_GuessesList)
+            {
+                PrintGuessAndResultLine(t.GuessValue, t.Result);
+            }
+
+            int emptyLines = Settings.m_MaxNumOfGuesses - i_GuessesList.Count;
+            for (int i = 0; i < emptyLines; i++)
+            {
+                PrintEmptyLine();
+            }
+
+            Console.WriteLine();
+            Console.WriteLine(i_Message);
+        }
     }
-
 }
-

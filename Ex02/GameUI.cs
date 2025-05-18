@@ -1,121 +1,105 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using static Ex02.GameLogic;
 
 namespace Ex02
 {
-    public class GameUI
+    public class GameUi
     {
+        private readonly Board m_Board = new Board();
 
-        public static StringBuilder convertGuessToString(int currGuess)
+        public void DisplayWelcomeMessage()
         {
-            StringBuilder sb = new StringBuilder();
-            for (int i = 0; i < 4; i++)
-            {
-                char c = (char)(currGuess + 64);
-            }
-            return sb;
+            Messages.PrintWelcomeMessage();
         }
 
-
-
-
-        public static int convertStringToInt(string userInput)
+        public int ShowMenuAndGetNumOfGuesses()
         {
-            int currGuess = 0;
-            for (int i = 0; i < 4; i++)
+            bool isValidInput = false;
+            int numOfGuesses = 0;
+            while (!isValidInput)
             {
-                currGuess = currGuess * 10;
-                currGuess += (int)(userInput[i] - 64);
-            }
-            return currGuess;  /// 1814
-        }
-
-
-        public static void PrintGuessAndResult(GameLogic.Guess CurrentGuess,int GuessIndex)
-        {
-            StringBuilder CurrentLine = ConvertGuessToStringBuilder(CurrentGuess);
-            CurrentLine = ProccessResult(CurrentGuess, CurrentLine);
-            Console.SetCursorPosition(7 + GuessIndex, 6);
-            System.Console.WriteLine(CurrentLine.ToString());
-            Console.SetCursorPosition(0,0);
-        }
-
-
-        private static StringBuilder ConvertGuessToStringBuilder(GameLogic.Guess CurrentGuess)
-        {
-            char CurrentLetter;
-            StringBuilder Guess = new StringBuilder();
-            for (int i = 0; i < 4; i++)
-            {
-                CurrentLetter = (char)(CurrentGuess.m_Inputs[i].guessCode + 64);
-                Guess.Append(CurrentLetter);
-                Guess.Append(" ");
-            }
-
-            return Guess;
-
-        }
-
-
-
-        private static StringBuilder ProccessResult(GameLogic.Guess CurrentGuess, StringBuilder CurrentLine)
-        {
-            GameLogic.eTurnResult CurrentResult;
-            int numberOfV = 0;
-            int NumberOfX = 0;
-            int NumberOfSpaces = 0;
-            for (int i = 0; i < 4; i++)
-            {
-                CurrentResult = CurrentGuess.m_Inputs[i].guessResult;
-                switch (CurrentResult)
+                Messages.PrintInputRequest();
+                string input = Console.ReadLine();
+                isValidInput = int.TryParse(input, out numOfGuesses);
+                if (!isValidInput)
                 {
-                    case GameLogic.eTurnResult.Red:
-                        NumberOfSpaces++;
-                        break;
-                    case GameLogic.eTurnResult.Green:
-                        numberOfV++;
-                        break;
-                    case GameLogic.eTurnResult.Yellow:
-                        NumberOfX++;
-                        break;
+                    Messages.PrintNumOfGuessInvalidInput();
+                }
+                else if (numOfGuesses > Settings.m_MaxNumOfGuesses || numOfGuesses < Settings.m_MinNumOfGuesses)
+                {
+                    isValidInput = false;
+                    Messages.PrintInvalidNumOfGuesses();
                 }
             }
-            for (int i = 0; i < 4; i++)
-            {
-                if (numberOfV > 0)
-                {
-                    CurrentLine.Append("V");
-                    numberOfV--;
-                }
-                else if (NumberOfX > 0)
-                {
-                    CurrentLine.Append("X");
-                    NumberOfX--;
-                }
-                else if (NumberOfSpaces > 0)
-                {
-                    CurrentLine.Append(" ");
-                    NumberOfSpaces--;
-                }
-            }
-            return CurrentLine;
-
+            return numOfGuesses;
         }
 
-        public static void PrintSecretItem(List<int> SecertItem)
+        internal bool AskForNewGame()
         {
-            StringBuilder SecretItemString = new StringBuilder();
-            for (int i = 0; i < 4; i++)
+            bool isValidInput = false;
+            string input = "";
+            while (!isValidInput)
             {
-                char CurrentChar = (char)(SecertItem[i] + 64);
-                SecretItemString.Append(CurrentChar);
-                SecretItemString.Append(" ");
+                Messages.PrintNewGameRequest();
+                input = Console.ReadLine();
+                if (input.ToLower() == "y" || input.ToLower() == "n")
+                {
+                    isValidInput = true;
+                }
+                else
+                {
+                    Messages.PrintInvalidNewGameInput();
+                }
             }
-            System.Console.WriteLine(SecretItemString.ToString());
+            return input.ToLower() == "y";
+        }
+
+        internal bool CheckIfQuit(string i_Guess)
+        {
+            i_Guess = i_Guess.ToLower();
+            return i_Guess == "q";
+        }
+
+        internal void DisplayBoard(List<Guess> i_GuessesList, Secret i_SecretItem, string i_Feedback, bool i_GameEnded) // Skeleton for upcoming display method change
+        {
+            m_Board.RenderBoard(i_GuessesList, i_SecretItem, i_Feedback, i_GameEnded);
+        }
+
+        internal void DisplayExitMessage()
+        {
+            Messages.PrintQuitMessage();
+        }
+
+        internal string GetGuessFromUser(out TurnStatus.eGameStatus o_GuessStatus)
+        {
+            string inputFromUser = "";
+            inputFromUser = Console.ReadLine(); 
+            bool containsOnlyValidLetters = Guess.ContainsOnlyValidLetters(inputFromUser); 
+            bool correctLength = Guess.IsInCorrectLength(inputFromUser);
+            bool containsReapeatingLetters = Guess.CheckIfHasRepeatingChars(inputFromUser);
+            if (CheckIfQuit(inputFromUser))
+            { 
+                o_GuessStatus = TurnStatus.eGameStatus.Quit;
+            }
+            else if (!correctLength) 
+            { 
+                o_GuessStatus = TurnStatus.eGameStatus.InvalidLength;
+
+            }
+            else if (!containsOnlyValidLetters)
+            {
+                o_GuessStatus = TurnStatus.eGameStatus.InvalidChar;
+            }
+            else if (containsReapeatingLetters)
+            {
+                o_GuessStatus = TurnStatus.eGameStatus.RepeatingChars;
+            }
+            else
+            {
+                o_GuessStatus = TurnStatus.eGameStatus.Valid;
+            }
+            
+            return inputFromUser;
         }
     }
 }
