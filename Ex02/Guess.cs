@@ -1,36 +1,82 @@
-﻿using System.Collections.Generic;
-
-namespace Ex02
+﻿namespace Ex02
 {
     public class Guess
     {
-        private const int m_NumOfItemsInGuess = 4;
+        private string m_Guess = "";
+        private string m_Result = "";
 
-        private List<Item> m_GuessItems;
-
-        public static Guess ConvertSringToGuess(string i_Guess)
+        public string GuessValue
         {
-            Guess guess = new Guess();
-            for (int i = 0; i < m_NumOfItemsInGuess; i++)
-            {
-                Item guessItem = new Item();
-                foreach (char letter in i_Guess)
-                {
-                    guessItem = Item.ConvertCharToItem(letter);
-                }
-                guess.m_GuessItems.Add(guessItem);
-            }
-            return guess;
+            get { return m_Guess; }
+        }
+        public string Result
+        {
+            get { return m_Result; }
         }
 
-        private string guessToString()
+        public Guess (string i_Guess)
         {
-            string newString = "";
-            for (int i = 0; i < m_NumOfItemsInGuess; i++)
+            m_Guess = i_Guess;
+        }
+        public bool CompareWithSecret(Secret i_Secret)
+        {
+            int numOfHits = 0;
+            int numOfNear = 0;
+            int numOfMisses = 0;
+            for (int i = 0; i < Settings.m_NumOfPins; i++)
             {
-                newString += (m_GuessItems[i].ItemLetterToChar());
+                char currentChar = m_Guess[i];
+                int index = i_Secret.SecretValue.IndexOf(currentChar);
+                if (index == i)
+                {
+                    numOfHits++;
+                }
+                else if (index != -1)
+                {
+                    numOfNear++;
+                }
+                else
+                {
+                    numOfMisses++;
+                }
             }
-            return newString;
+
+            for (int i = 0; i < numOfHits; i++)
+            {
+                m_Result += "V";
+            }
+
+            for (int i = 0; i < numOfNear; i++)
+            {
+                m_Result += "X";
+            }
+
+            for (int i = 0; i < numOfMisses; i++)
+            {
+                m_Result += " ";
+            }
+
+            return numOfHits == Settings.m_NumOfPins;
+        }
+
+        public static bool ContainsOnlyValidLetters(string i_Guess)
+        {
+            bool result = true;
+            foreach (var charecther in i_Guess)
+            {
+                if (charecther < 'A' || charecther > 'H')
+                {
+                    result = false;
+                    break;
+                }
+            }
+
+            return result;
+        }
+
+        internal static bool IsInCorrectLength(string guess)
+        {
+            return guess.Length == Settings.m_NumOfPins;
         }
     }
 }
