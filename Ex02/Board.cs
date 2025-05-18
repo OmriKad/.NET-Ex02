@@ -51,9 +51,9 @@ namespace Ex02
             {
                 PrintHead();
             }
-            for (int i = 0; i < i_GuessesList.Count; i++)
+            foreach(Guess t in i_GuessesList)
             {
-                PrintGuessAndResultLine(i_GuessesList[i].GuessValue, i_GuessesList[i].Result);
+                PrintGuessAndResultLine(t.GuessValue, t.Result);
             }
 
             int emptyLines = Settings.m_MaxNumOfGuesses - i_GuessesList.Count;
@@ -61,6 +61,7 @@ namespace Ex02
             {
                 PrintEmptyLine();
             }
+
             Console.WriteLine();
             Console.WriteLine(i_Message);
         }

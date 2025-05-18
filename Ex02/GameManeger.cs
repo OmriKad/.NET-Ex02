@@ -36,59 +36,58 @@ namespace Ex02
         {
             bool wantsToQuit = false;
             string message = Messages.GuessRequest();
-            TurnStatus.eGameStatus guessStatus;
             for (int i = 0; i < i_GuessLimit; i++)
             {
-                string guess = "";
+                string inputFromUser = "";
                 bool validGuess = false;
-                while(!validGuess && !wantsToQuit)
+                while (!validGuess && !wantsToQuit)
                 {
                     m_GameUi.DisplayBoard(m_GuessesList, m_Secret, message, false);
-                    guess = m_GameUi.GetGuessFromUser(out guessStatus);
-                    if (guessStatus == TurnStatus.eGameStatus.InvalidLength)
+                    inputFromUser = m_GameUi.GetGuessFromUser(out TurnStatus.eGameStatus guessStatus);
+                    switch (guessStatus)
                     {
-                        message = Messages.InvalidGuessLength();
-                    }
-                    else if (guessStatus == TurnStatus.eGameStatus.InvalidChar)
-                    {
-                        message = Messages.InvalidGuessLetters();
-                    }
-                    else if (guessStatus == TurnStatus.eGameStatus.RepeatingChars)
-                    {
-                        message = Messages.RepeatingChars();
-                    }
-                    else if (guessStatus == TurnStatus.eGameStatus.Quit)
-                    {
-                        wantsToQuit = true;
-                    }
-                    else
-                    {
-                        message = Messages.GuessRequest();
-                        validGuess = true;
+                        case TurnStatus.eGameStatus.InvalidLength:
+                            message = Messages.InvalidGuessLength();
+                            break;
+                        case TurnStatus.eGameStatus.InvalidChar:
+                            message = Messages.InvalidGuessLetters();
+                            break;
+                        case TurnStatus.eGameStatus.RepeatingChars:
+                            message = Messages.RepeatingChars();
+                            break;
+                        case TurnStatus.eGameStatus.Quit:
+                            wantsToQuit = true;
+                            break;
+                        case TurnStatus.eGameStatus.Valid:
+                        default:
+                            message = Messages.GuessRequest();
+                            validGuess = true;
+                            break;
                     }
                 }
 
-                if (wantsToQuit) 
-                { 
+                if (wantsToQuit)
+                {
                     break;
                 }
 
-                Guess inputGuess = new Guess(guess);
+                Guess inputGuess = new Guess(inputFromUser);
                 m_GuessesList.Add(inputGuess);
                 m_GameWon = inputGuess.CompareWithSecret(m_Secret);
-                if(m_GameWon)
+                if (m_GameWon)
                 {
                     break;
                 }
             }
 
-            if (m_GameWon)
+            switch (m_GameWon)
             {
-                m_GameUi.DisplayBoard(m_GuessesList, m_Secret, Messages.PrintWinMessage(), true);
-            }
-            else if (!m_GameWon)
-            {
-                m_GameUi.DisplayBoard(m_GuessesList, m_Secret, Messages.PrintLoseMessage(), true);
+                case true:
+                    m_GameUi.DisplayBoard(m_GuessesList, m_Secret, Messages.PrintWinMessage(), true);
+                    break;
+                case false:
+                    m_GameUi.DisplayBoard(m_GuessesList, m_Secret, Messages.PrintLoseMessage(), true);
+                    break;
             }
 
             return wantsToQuit;

@@ -25,7 +25,7 @@ namespace Ex02
                 {
                     Messages.PrintNumOfGuessInvalidInput();
                 }
-                if (numOfGuesses > Settings.m_MaxNumOfGuesses || numOfGuesses < Settings.m_MinNumOfGuesses)
+                else if (numOfGuesses > Settings.m_MaxNumOfGuesses || numOfGuesses < Settings.m_MinNumOfGuesses)
                 {
                     isValidInput = false;
                     Messages.PrintInvalidNumOfGuesses();
@@ -60,22 +60,7 @@ namespace Ex02
             return i_Guess == "q";
         }
 
-        internal bool CheckIfHasRepeatingChars(string i_Guess)
-        {
-            bool result = false;
-            foreach (char c in i_Guess)
-            {
-                result = i_Guess.IndexOf(c) != i_Guess.LastIndexOf(c);
-                if(result == true)
-                {
-                    break;
-                }
-            }
-
-            return result;
-        }
-
-        internal void DisplayBoard(List<Guess> i_GuessesList, Secret i_SecretItem, string i_Feedback, bool i_GameEnded)
+        internal void DisplayBoard(List<Guess> i_GuessesList, Secret i_SecretItem, string i_Feedback, bool i_GameEnded) // Skeleton for upcoming display method change
         {
             m_Board.RenderBoard(i_GuessesList, i_SecretItem, i_Feedback, i_GameEnded);
         }
@@ -85,18 +70,14 @@ namespace Ex02
             Messages.PrintQuitMessage();
         }
 
-        internal void DisplayWinMessage()
-        {
-            Messages.PrintWinMessage();
-        }
-
         internal string GetGuessFromUser(out TurnStatus.eGameStatus o_GuessStatus)
         {
-            string guess = "";
-            guess = Console.ReadLine(); 
-            bool containsOnlyValidLetters = Guess.ContainsOnlyValidLetters(guess); 
-            bool correctLength = Guess.IsInCorrectLength(guess);
-            if (CheckIfQuit(guess))
+            string inputFromUser = "";
+            inputFromUser = Console.ReadLine(); 
+            bool containsOnlyValidLetters = Guess.ContainsOnlyValidLetters(inputFromUser); 
+            bool correctLength = Guess.IsInCorrectLength(inputFromUser);
+            bool containsReapeatingLetters = Guess.CheckIfHasRepeatingChars(inputFromUser);
+            if (CheckIfQuit(inputFromUser))
             { 
                 o_GuessStatus = TurnStatus.eGameStatus.Quit;
             }
@@ -109,7 +90,7 @@ namespace Ex02
             {
                 o_GuessStatus = TurnStatus.eGameStatus.InvalidChar;
             }
-            else if (CheckIfHasRepeatingChars(guess))
+            else if (containsReapeatingLetters)
             {
                 o_GuessStatus = TurnStatus.eGameStatus.RepeatingChars;
             }
@@ -118,7 +99,7 @@ namespace Ex02
                 o_GuessStatus = TurnStatus.eGameStatus.Valid;
             }
             
-            return guess;
+            return inputFromUser;
         }
     }
 }

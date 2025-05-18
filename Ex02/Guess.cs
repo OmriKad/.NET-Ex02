@@ -74,6 +74,21 @@
             return result;
         }
 
+        public static bool CheckIfHasRepeatingChars(string i_Guess)
+        {
+            bool result = false;
+            foreach (char c in i_Guess)
+            {
+                result = i_Guess.IndexOf(c) != i_Guess.LastIndexOf(c);
+                if (result == true)
+                {
+                    break;
+                }
+            }
+
+            return result;
+        }
+
         internal static bool IsInCorrectLength(string guess)
         {
             return guess.Length == Settings.m_NumOfPins;
